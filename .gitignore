@@ -1,0 +1,22 @@
+# secrets: .env (Groq key) IS committed on purpose so a reviewer can run the project
+properties.md
+
+# python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# run artefacts / model caches
+runs/
+.paddlex/
+.paddleocr/
+
+# local tooling
+.kilo/
+.claude/
+fakturamaviews.properties
+
+# the assignment document (not ours to publish)
+[[]EXTERNAL[]]*.pdf

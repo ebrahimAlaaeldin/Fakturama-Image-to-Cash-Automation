@@ -1,0 +1,332 @@
+{
+  "01_original": {
+    "image": "01_original.png",
+    "purpose": "The supplied sample: full create path on an empty workspace.",
+    "expect_error": null,
+    "expected": {
+      "external_reference": "WEB-2026-0714-A17",
+      "order_date": "2026-07-14",
+      "company": "Northstar Office GmbH",
+      "contact": [
+        "Marta",
+        "Klein"
+      ],
+      "alias": "NORTHSTAR-BERLIN",
+      "billing": [
+        "Friedrichstrasse 88",
+        "10117",
+        "Berlin"
+      ],
+      "delivery": [
+        "Beusselstrasse 44",
+        "10553",
+        "Berlin"
+      ],
+      "payment": [
+        "Bank Transfer",
+        "PAID",
+        "2026-07-18"
+      ],
+      "items": [
+        [
+          "CHR-ERG-01",
+          "Ergonomic Desk Chair",
+          "2",
+          "250.00",
+          "10",
+          "19",
+          "450.00"
+        ],
+        [
+          "MAT-DESK-02",
+          "Anti-Fatigue Desk Mat",
+          "3",
+          "40.00",
+          "0",
+          "19",
+          "120.00"
+        ]
+      ],
+      "totals": [
+        "570.00",
+        "108.30",
+        "678.30"
+      ]
+    }
+  },
+  "02_degraded_scan": {
+    "image": "02_degraded_scan.png",
+    "purpose": "Same order as a skewed, blurred, low-resolution JPEG: extraction must still be exact.",
+    "expect_error": null,
+    "expected": {
+      "external_reference": "WEB-2026-0714-A17",
+      "order_date": "2026-07-14",
+      "company": "Northstar Office GmbH",
+      "contact": [
+        "Marta",
+        "Klein"
+      ],
+      "alias": "NORTHSTAR-BERLIN",
+      "billing": [
+        "Friedrichstrasse 88",
+        "10117",
+        "Berlin"
+      ],
+      "delivery": [
+        "Beusselstrasse 44",
+        "10553",
+        "Berlin"
+      ],
+      "payment": [
+        "Bank Transfer",
+        "PAID",
+        "2026-07-18"
+      ],
+      "items": [
+        [
+          "CHR-ERG-01",
+          "Ergonomic Desk Chair",
+          "2",
+          "250.00",
+          "10",
+          "19",
+          "450.00"
+        ],
+        [
+          "MAT-DESK-02",
+          "Anti-Fatigue Desk Mat",
+          "3",
+          "40.00",
+          "0",
+          "19",
+          "120.00"
+        ]
+      ],
+      "totals": [
+        "570.00",
+        "108.30",
+        "678.30"
+      ]
+    }
+  },
+  "03_unpaid": {
+    "image": "03_unpaid.png",
+    "purpose": "Not paid: PDF 5.3 'leave paid clear and do not invent a date or value'.",
+    "expect_error": null,
+    "expected": {
+      "external_reference": "WEB-2026-0714-A18",
+      "order_date": "2026-07-14",
+      "company": "Northstar Office GmbH",
+      "contact": [
+        "Marta",
+        "Klein"
+      ],
+      "alias": "NORTHSTAR-BERLIN",
+      "billing": [
+        "Friedrichstrasse 88",
+        "10117",
+        "Berlin"
+      ],
+      "delivery": [
+        "Beusselstrasse 44",
+        "10553",
+        "Berlin"
+      ],
+      "payment": [
+        "Bank Transfer",
+        "UNPAID",
+        null
+      ],
+      "items": [
+        [
+          "CHR-ERG-01",
+          "Ergonomic Desk Chair",
+          "2",
+          "250.00",
+          "10",
+          "19",
+          "450.00"
+        ],
+        [
+          "MAT-DESK-02",
+          "Anti-Fatigue Desk Mat",
+          "3",
+          "40.00",
+          "0",
+          "19",
+          "120.00"
+        ]
+      ],
+      "totals": [
+        "570.00",
+        "108.30",
+        "678.30"
+      ]
+    }
+  },
+  "04_same_address": {
+    "image": "04_same_address.png",
+    "purpose": "Billing == delivery: PDF 2.8 assigns both roles to the Main address (on a workspace without this Debtor).",
+    "expect_error": null,
+    "expected": {
+      "external_reference": "WEB-2026-0714-A19",
+      "order_date": "2026-07-14",
+      "company": "Northstar Office GmbH",
+      "contact": [
+        "Marta",
+        "Klein"
+      ],
+      "alias": "NORTHSTAR-BERLIN",
+      "billing": [
+        "Friedrichstrasse 88",
+        "10117",
+        "Berlin"
+      ],
+      "delivery": [
+        "Friedrichstrasse 88",
+        "10117",
+        "Berlin"
+      ],
+      "payment": [
+        "Bank Transfer",
+        "PAID",
+        "2026-07-18"
+      ],
+      "items": [
+        [
+          "CHR-ERG-01",
+          "Ergonomic Desk Chair",
+          "2",
+          "250.00",
+          "10",
+          "19",
+          "450.00"
+        ],
+        [
+          "MAT-DESK-02",
+          "Anti-Fatigue Desk Mat",
+          "3",
+          "40.00",
+          "0",
+          "19",
+          "120.00"
+        ]
+      ],
+      "totals": [
+        "570.00",
+        "108.30",
+        "678.30"
+      ]
+    }
+  },
+  "05_new_product_credit_card": {
+    "image": "05_new_product_credit_card.png",
+    "purpose": "Existing Debtor + Product reused, one new Product created. 'Credit Card' is not on the existing Debtor -> PDF 5.2 stops for manual review; create the method, then --resume finishes the Invoice.",
+    "expect_error": null,
+    "expected": {
+      "external_reference": "WEB-2026-0815-B02",
+      "order_date": "2026-07-14",
+      "company": "Northstar Office GmbH",
+      "contact": [
+        "Marta",
+        "Klein"
+      ],
+      "alias": "NORTHSTAR-BERLIN",
+      "billing": [
+        "Friedrichstrasse 88",
+        "10117",
+        "Berlin"
+      ],
+      "delivery": [
+        "Beusselstrasse 44",
+        "10553",
+        "Berlin"
+      ],
+      "payment": [
+        "Credit Card",
+        "PAID",
+        "2026-07-18"
+      ],
+      "items": [
+        [
+          "CHR-ERG-01",
+          "Ergonomic Desk Chair",
+          "2",
+          "250.00",
+          "10",
+          "19",
+          "450.00"
+        ],
+        [
+          "LMP-DESK-03",
+          "LED Desk Lamp",
+          "3",
+          "40.00",
+          "0",
+          "19",
+          "120.00"
+        ]
+      ],
+      "totals": [
+        "570.00",
+        "108.30",
+        "678.30"
+      ]
+    }
+  },
+  "06_line_total_wrong": {
+    "image": "06_line_total_wrong.png",
+    "purpose": "Line total does not match qty x price x (1-discount): extraction must fail closed.",
+    "expect_error": "ExtractionError",
+    "expected": {
+      "external_reference": "WEB-2026-0714-A17",
+      "order_date": "2026-07-14",
+      "company": "Northstar Office GmbH",
+      "contact": [
+        "Marta",
+        "Klein"
+      ],
+      "alias": "NORTHSTAR-BERLIN",
+      "billing": [
+        "Friedrichstrasse 88",
+        "10117",
+        "Berlin"
+      ],
+      "delivery": [
+        "Beusselstrasse 44",
+        "10553",
+        "Berlin"
+      ],
+      "payment": [
+        "Bank Transfer",
+        "PAID",
+        "2026-07-18"
+      ],
+      "items": [
+        [
+          "CHR-ERG-01",
+          "Ergonomic Desk Chair",
+          "2",
+          "250.00",
+          "10",
+          "19",
+          "450.00"
+        ],
+        [
+          "MAT-DESK-02",
+          "Anti-Fatigue Desk Mat",
+          "3",
+          "40.00",
+          "0",
+          "19",
+          "120.00"
+        ]
+      ],
+      "totals": [
+        "570.00",
+        "108.30",
+        "678.30"
+      ]
+    }
+  }
+}
