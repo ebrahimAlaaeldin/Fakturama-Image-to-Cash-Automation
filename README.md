@@ -52,11 +52,52 @@ Open Fakturama first, then:
 Exit codes: `0` done, `2` manual review, `1` verification failed. Every run writes
 `runs\<timestamp>\report.html` (each step, its decision and a screenshot).
 
+## Resume after a manual review
+
+When the run stops for manual review (exit code `2`), fix the cause in Fakturama, for example by
+creating a missing payment method, then click **Resume** (or add `--resume`). Resume checks what is
+already saved in **Data > Documents** and continues from there:
+
+| Already saved | Resume does |
+|---|---|
+| nothing | runs the normal flow; master data created before the stop is found and reused |
+| the Order | re-checks the Order read-only, creates the linked Invoice, finishes |
+| Order + Invoice | re-checks both; changes and saves only what differs |
+| anything unexpected | stops for manual review |
+
+Assumptions: Fakturama's saved documents are the source of truth (no local state file); one
+External Reference means at most one Order and one Invoice; the stopped run's unsaved drafts are
+discarded first, while any other unsaved editor stops Resume. Tested live: a run stopped at 5.2
+(payment method "Credit Card" missing), the method was created, and Resume finished the Invoice; a
+second Resume changed nothing.
+
+## Test cases
+
+Six images in `samples/cases` are edits of the original order; six in `samples/stress` are new
+orders in the same layout.
+
+| Image | What it tests | Expected |
+|---|---|---|
+| 01_original | the supplied order | full create path |
+| 02_degraded_scan | skewed, blurred, low-resolution JPEG | same data as 01 |
+| 03_unpaid | status UNPAID | *paid* left clear |
+| 04_same_address | billing = delivery | one address with both roles |
+| 05_new_product_credit_card | new product + Credit Card | 5.2 manual review → Resume |
+| 06_line_total_wrong | totals don't add up | stops at extraction |
+| s1_four_items_mixed_vat | 4 lines, VAT 19 % + 7 %, 1,250.00 | all values exact |
+| s2_not_paid_sepa | SEPA Direct Debit, NOT PAID | all values exact |
+| s3_umlauts_same_address | "Müller & Söhne", three-part name, Credit Card | all values exact |
+| s4_five_items_7pct | 5 lines, 7 % VAT | all values exact |
+| s5_photo_of_s1 | phone photo (tilted, blurred) | same data as s1 |
+| s6_tilted_photo_of_s3 | very blurry photo | stops: accents unreadable |
+
+All 12 pass the extraction tests. Cases 01, 03 and 05 were also run end to end in Fakturama.
+
 ## Tests
 
 ```powershell
 .venv\Scripts\python -m pytest -q                              # offline unit tests
-$env:RUN_INTEGRATION=1; .venv\Scripts\python -m pytest -q      # + 6 extraction cases (Groq)
+$env:RUN_INTEGRATION=1; .venv\Scripts\python -m pytest -q      # + 12 extraction cases (Groq)
 ```
 
 ## Project layout
@@ -67,7 +108,8 @@ fakturama_i2c/
   ui/           generic UI Automation: find, act + verify, grid OCR, evidence
   fakturama/    page objects for Fakturama's screens
   workflow/     PDF steps, matching rules, resume
-samples/cases/  six test images + expected.json
+samples/cases/   six test images + expected.json
+samples/stress/  six more test images + expected.json
 ```
 
 ## Notes
@@ -75,5 +117,3 @@ samples/cases/  six test images + expected.json
 * Each order reference can be imported **once per workspace**. Running the same image again stops at
   the safety check.
 * Tested with the English UI only. A full run takes about 3–4 minutes.
-* **If I had 3 more hours:** read Fakturama's grids without OCR, run every manual-review branch live,
-  use a disposable workspace per run, and test harder images (photos, blur, more lines).
