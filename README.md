@@ -19,7 +19,13 @@ the run for manual review.
 .\setup.bat      # creates .venv, installs packages (~1 GB), downloads OCR models, runs tests
 ```
 
-The Groq API key is already in `.env`.
+Then put a Groq API key in `.env` (`setup.bat` creates it from `.env.example`):
+
+```
+GROQ_API_KEY=your-key-here
+```
+
+A free key: https://console.groq.com/keys
 
 ## Run the GUI
 

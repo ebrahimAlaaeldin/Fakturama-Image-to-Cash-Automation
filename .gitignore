@@ -1,4 +1,5 @@
-# secrets: .env (Groq key) IS committed on purpose so a reviewer can run the project
+# secrets
+.env
 properties.md
 
 # python
