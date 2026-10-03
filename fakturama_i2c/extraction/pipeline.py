@@ -16,7 +16,7 @@ from ..models import OrderExtraction, RawOrder
 from ..vision import layout
 from ..vision.ocr import run_ocr
 from . import llm_structurer
-from .grounding_check import check_grounding
+from .grounding_check import accent_conflicts, check_grounding
 from .layout_check import layout_conflicts
 from .normalize import to_order
 from .reconcile import ensure_reconciled
@@ -31,6 +31,9 @@ def extract(image: Path, settings: Settings, out_dir: Path) -> OrderExtraction:
     tokens = run_ocr(image, settings.ocr_min_width)
     _dump(out_dir / "ocr_tokens.json", [t.to_dict() for t in tokens])
     log.info("OCR found %d text fragments", len(tokens))
+    accents = accent_conflicts(tokens)
+    if accents:  # e.g. a blurry photo: 'Müller' and 'Muller' in the same image
+        raise ExtractionError("the image is too unclear to read accented letters reliably", accents)
 
     rows_text = layout.render(layout.group_rows(tokens))
     (out_dir / "ocr_rows.txt").write_text(rows_text, encoding="utf-8")

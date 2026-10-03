@@ -39,3 +39,15 @@ def test_multi_token_value_is_found(raw_order):
     tokens = [*_tokens_for(raw_order), tok("Acme", 0, 999), tok("Widgets AG", 60, 999)]
     raw_order.company = "Acme Widgets AG"
     assert not [i for i in check_grounding(raw_order, tokens, 0.8) if i.startswith("company")]
+
+
+def test_accent_conflict_is_detected():
+    from fakturama_i2c.extraction.grounding_check import accent_conflicts
+    from fakturama_i2c.vision.ocr import OcrToken
+
+    def tok(text):
+        return OcrToken(text=text, conf=0.95, x0=0, y0=0, x1=10, y1=10)
+
+    assert accent_conflicts([tok("Müller & Söhne GmbH"), tok("Muller&Sohne GmbH")])  # blurry photo, seen live
+    assert not accent_conflicts([tok("Müller & Söhne GmbH"), tok("80331 München")])  # consistent
+    assert not accent_conflicts([tok("Northstar Office GmbH"), tok("Friedrichstrasse 88")])  # no accents

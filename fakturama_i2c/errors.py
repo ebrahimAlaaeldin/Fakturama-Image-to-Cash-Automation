@@ -47,3 +47,12 @@ class FollowUpExists(ManualReviewRequired):
     def __init__(self, number: str, message: str):
         self.number = number
         super().__init__("4.6", f"the Order already has a follow-up Invoice {number}", {"fakturama": message})
+
+
+class ScreenObstructed(ManualReviewRequired):
+    """Another application's window covers a list that has to be read from the screen."""
+
+    def __init__(self, title: str):
+        self.title = title
+        super().__init__("screen", f"another window covers Fakturama: {title!r} - move, hide or close it, then Resume",
+                         {"window": title})

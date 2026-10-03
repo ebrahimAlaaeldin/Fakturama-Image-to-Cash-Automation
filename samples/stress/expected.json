@@ -1,0 +1,368 @@
+{
+ "s1_four_items_mixed_vat": {
+  "image": "s1_four_items_mixed_vat.png",
+  "purpose": "4 lines, VAT 19% and 7%, 12.5% discount, thousands separator",
+  "expect_error": null,
+  "expected": {
+   "external_reference": "WEB-2026-0901-C01",
+   "order_date": "2026-09-01",
+   "company": "Northstar Office GmbH",
+   "contact_last": "Klein",
+   "alias": "NORTHSTAR-BERLIN",
+   "billing": [
+    "Friedrichstrasse 88",
+    "10117",
+    "Berlin"
+   ],
+   "delivery": [
+    "Beusselstrasse 44",
+    "10553",
+    "Berlin"
+   ],
+   "payment": [
+    "Bank Transfer",
+    "PAID",
+    "2026-09-03"
+   ],
+   "items": [
+    [
+     "DSK-STD-140",
+     "Standing Desk 140cm",
+     "2",
+     "1250.00",
+     "5",
+     "19",
+     "2375.00"
+    ],
+    [
+     "BK-ERGO-07",
+     "Ergonomics Handbook",
+     "10",
+     "24.90",
+     "0",
+     "7",
+     "249.00"
+    ],
+    [
+     "CBL-USB-C2",
+     "USB-C Cable 2m",
+     "25",
+     "8.40",
+     "12.5",
+     "19",
+     "183.75"
+    ],
+    [
+     "SRV-INST-01",
+     "Installation Service",
+     "3",
+     "65.00",
+     "0",
+     "19",
+     "195.00"
+    ]
+   ],
+   "totals": [
+    "3002.75",
+    "540.64",
+    "3543.39"
+   ]
+  }
+ },
+ "s5_photo_of_s1": {
+  "image": "s5_photo_of_s1.jpg",
+  "purpose": "4 lines, VAT 19% and 7%, 12.5% discount, thousands separator (photo: rotated, blurred, JPEG)",
+  "expect_error": null,
+  "expected": {
+   "external_reference": "WEB-2026-0901-C01",
+   "order_date": "2026-09-01",
+   "company": "Northstar Office GmbH",
+   "contact_last": "Klein",
+   "alias": "NORTHSTAR-BERLIN",
+   "billing": [
+    "Friedrichstrasse 88",
+    "10117",
+    "Berlin"
+   ],
+   "delivery": [
+    "Beusselstrasse 44",
+    "10553",
+    "Berlin"
+   ],
+   "payment": [
+    "Bank Transfer",
+    "PAID",
+    "2026-09-03"
+   ],
+   "items": [
+    [
+     "DSK-STD-140",
+     "Standing Desk 140cm",
+     "2",
+     "1250.00",
+     "5",
+     "19",
+     "2375.00"
+    ],
+    [
+     "BK-ERGO-07",
+     "Ergonomics Handbook",
+     "10",
+     "24.90",
+     "0",
+     "7",
+     "249.00"
+    ],
+    [
+     "CBL-USB-C2",
+     "USB-C Cable 2m",
+     "25",
+     "8.40",
+     "12.5",
+     "19",
+     "183.75"
+    ],
+    [
+     "SRV-INST-01",
+     "Installation Service",
+     "3",
+     "65.00",
+     "0",
+     "19",
+     "195.00"
+    ]
+   ],
+   "totals": [
+    "3002.75",
+    "540.64",
+    "3543.39"
+   ]
+  }
+ },
+ "s2_not_paid_sepa": {
+  "image": "s2_not_paid_sepa.png",
+  "purpose": "SEPA Direct Debit, status NOT PAID, no payment date",
+  "expect_error": null,
+  "expected": {
+   "external_reference": "WEB-2026-0901-C02",
+   "order_date": "2026-09-01",
+   "company": "Northstar Office GmbH",
+   "contact_last": "Klein",
+   "alias": "NORTHSTAR-BERLIN",
+   "billing": [
+    "Friedrichstrasse 88",
+    "10117",
+    "Berlin"
+   ],
+   "delivery": [
+    "Beusselstrasse 44",
+    "10553",
+    "Berlin"
+   ],
+   "payment": [
+    "SEPA Direct Debit",
+    "NOT PAID",
+    null
+   ],
+   "items": [
+    [
+     "CHR-ERG-01",
+     "Ergonomic Desk Chair",
+     "1",
+     "250.00",
+     "0",
+     "19",
+     "250.00"
+    ]
+   ],
+   "totals": [
+    "250.00",
+    "47.50",
+    "297.50"
+   ]
+  }
+ },
+ "s3_umlauts_same_address": {
+  "image": "s3_umlauts_same_address.png",
+  "purpose": "umlauts, '&', three-part contact name, billing = delivery, Credit Card",
+  "expect_error": null,
+  "expected": {
+   "external_reference": "WEB-2026-0901-C03",
+   "order_date": "2026-09-01",
+   "company": "Müller & Söhne GmbH",
+   "contact_last": "Schmidt",
+   "alias": "MUELLER-MUC",
+   "billing": [
+    "Königsallee 12",
+    "80331",
+    "München"
+   ],
+   "delivery": [
+    "Königsallee 12",
+    "80331",
+    "München"
+   ],
+   "payment": [
+    "Credit Card",
+    "PAID",
+    "2026-09-03"
+   ],
+   "items": [
+    [
+     "LMP-DESK-03",
+     "LED Desk Lamp",
+     "4",
+     "40.00",
+     "0",
+     "19",
+     "160.00"
+    ],
+    [
+     "MAT-DESK-02",
+     "Anti-Fatigue Desk Mat",
+     "2",
+     "40.00",
+     "15",
+     "19",
+     "68.00"
+    ]
+   ],
+   "totals": [
+    "228.00",
+    "43.32",
+    "271.32"
+   ]
+  }
+ },
+ "s6_tilted_photo_of_s3": {
+  "image": "s6_tilted_photo_of_s3.jpg",
+  "purpose": "umlauts, '&', three-part contact name, billing = delivery, Credit Card (photo: rotated, blurred, JPEG)",
+  "expect_error": "ExtractionError",
+  "expected": {
+   "external_reference": "WEB-2026-0901-C03",
+   "order_date": "2026-09-01",
+   "company": "Müller & Söhne GmbH",
+   "contact_last": "Schmidt",
+   "alias": "MUELLER-MUC",
+   "billing": [
+    "Königsallee 12",
+    "80331",
+    "München"
+   ],
+   "delivery": [
+    "Königsallee 12",
+    "80331",
+    "München"
+   ],
+   "payment": [
+    "Credit Card",
+    "PAID",
+    "2026-09-03"
+   ],
+   "items": [
+    [
+     "LMP-DESK-03",
+     "LED Desk Lamp",
+     "4",
+     "40.00",
+     "0",
+     "19",
+     "160.00"
+    ],
+    [
+     "MAT-DESK-02",
+     "Anti-Fatigue Desk Mat",
+     "2",
+     "40.00",
+     "15",
+     "19",
+     "68.00"
+    ]
+   ],
+   "totals": [
+    "228.00",
+    "43.32",
+    "271.32"
+   ]
+  }
+ },
+ "s4_five_items_7pct": {
+  "image": "s4_five_items_7pct.png",
+  "purpose": "5 lines (table grows), all VAT 7%, small amounts",
+  "expect_error": null,
+  "expected": {
+   "external_reference": "WEB-2026-0901-C04",
+   "order_date": "2026-09-01",
+   "company": "Northstar Office GmbH",
+   "contact_last": "Klein",
+   "alias": "NORTHSTAR-BERLIN",
+   "billing": [
+    "Friedrichstrasse 88",
+    "10117",
+    "Berlin"
+   ],
+   "delivery": [
+    "Beusselstrasse 44",
+    "10553",
+    "Berlin"
+   ],
+   "payment": [
+    "Bank Transfer",
+    "PAID",
+    "2026-09-03"
+   ],
+   "items": [
+    [
+     "BK-001",
+     "Office Guide Vol. 1",
+     "1",
+     "10.95",
+     "5",
+     "7",
+     "10.40"
+    ],
+    [
+     "BK-002",
+     "Office Guide Vol. 2",
+     "2",
+     "11.95",
+     "10",
+     "7",
+     "21.51"
+    ],
+    [
+     "BK-003",
+     "Office Guide Vol. 3",
+     "3",
+     "12.95",
+     "0",
+     "7",
+     "38.85"
+    ],
+    [
+     "BK-004",
+     "Office Guide Vol. 4",
+     "4",
+     "13.95",
+     "5",
+     "7",
+     "53.01"
+    ],
+    [
+     "BK-005",
+     "Office Guide Vol. 5",
+     "5",
+     "14.95",
+     "10",
+     "7",
+     "67.28"
+    ]
+   ],
+   "totals": [
+    "191.05",
+    "13.37",
+    "204.42"
+   ]
+  }
+ }
+}

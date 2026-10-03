@@ -7,7 +7,7 @@ from collections.abc import Callable
 from typing import TypeVar
 
 from ..config import settings
-from ..errors import ControlNotFound
+from ..errors import ControlNotFound, ManualReviewRequired
 
 T = TypeVar("T")
 
@@ -28,6 +28,8 @@ def wait_until(
             value = probe()
             if value:
                 return value
+        except ManualReviewRequired:
+            raise  # a deliberate stop (e.g. a window covers the screen) - waiting won't fix it
         except Exception as exc:  # noqa: BLE001 - UIA throws many COM error types while UI settles
             last_exc = exc
         if time.monotonic() >= deadline:

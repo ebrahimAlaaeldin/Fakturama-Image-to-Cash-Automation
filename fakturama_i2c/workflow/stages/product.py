@@ -3,6 +3,8 @@ then complete the item line."""
 
 from __future__ import annotations
 
+import time
+
 from ...errors import ManualReviewRequired
 from ...fakturama import labels as L
 from ...fakturama.master_data import ProductEditor, VatList, fill_vat, is_standard_vat_code, vat_code
@@ -56,11 +58,21 @@ def _search_and_select(ctx: RunContext, item: LineItem, step: str) -> Match:
 def _verify_auto_selected(ctx: RunContext, lines: ItemsGrid, before: list[str], item: LineItem, step: str) -> Match:
     """The selector closed itself (single search hit). Accept only if exactly one new line was
     added and its Item No. is exactly the SKU - otherwise the wrong product may be on the Order."""
-    after = [r.get("Item No.") for r in lines.rows()]
-    added = list(after)
-    for sku in before:
-        if sku in added:
-            added.remove(sku)
+    def new_lines() -> list[str]:
+        added = [r.get("Item No.") for r in lines.rows()]
+        for sku in before:
+            if sku in added:
+                added.remove(sku)
+        return added
+
+    # Fakturama adds the line a moment after the dialog closes; one immediate read can miss it
+    # (seen live: the line was there in the screenshot, but the read found nothing new).
+    added: list[str] = []
+    deadline = time.monotonic() + 8
+    while not added and time.monotonic() < deadline:
+        added = new_lines()
+        if not added:
+            time.sleep(0.5)
     ctx.evidence.record(f"{step} product auto-selected", "found" if added else "missing", sku=item.sku, added=added)
     if len(added) == 1 and key(added[0]) == key(item.sku):
         return Match(MatchKind.EXACT, row={"item_number": added[0]}, index=None)

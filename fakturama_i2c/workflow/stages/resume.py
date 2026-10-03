@@ -74,10 +74,16 @@ def resume_from_order(ctx: RunContext, order_index: int, invoice_index: int | No
     # 4.1-4.3 read-only: a saved Order is never edited or saved again (PDF: save once)
     verify_order_addresses(ctx, "R 4.1", switch_tabs=True)
     with ctx.step("R 4.1-4.3 verify saved Order", number=ctx.order_no):
-        if ctx.editor.vat_mode().strip() != L.VAT_MODE_WITH_VAT:
-            raise VerificationFailed("R 4.1", "saved Order VAT mode", L.VAT_MODE_WITH_VAT, ctx.editor.vat_mode())
-        verify_lines(ctx, "R 4.1")
-        verify_totals(ctx, ctx.editor, "R 4.3")
+        # A docked Documents view can leave the Order grid only one row high. Maximize
+        # its editor pane while checking saved lines, then restore the view layout for 4.5.
+        ctx.app.set_editor_maximized(ctx.editor.root, True)
+        try:
+            if ctx.editor.vat_mode().strip() != L.VAT_MODE_WITH_VAT:
+                raise VerificationFailed("R 4.1", "saved Order VAT mode", L.VAT_MODE_WITH_VAT, ctx.editor.vat_mode())
+            verify_lines(ctx, "R 4.1")
+            verify_totals(ctx, ctx.editor, "R 4.3")
+        finally:
+            ctx.app.set_editor_maximized(ctx.editor.root, False)
     with ctx.step("R 4.5 Order in Documents", number=ctx.order_no):
         verify_document_row(ctx, ctx.order_no, L.STATE_OPEN, o.totals.gross, "R 4.5")
 

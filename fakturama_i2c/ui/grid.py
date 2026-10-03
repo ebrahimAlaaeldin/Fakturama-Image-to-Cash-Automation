@@ -14,7 +14,10 @@ Each row carries the screen point of its centre so it can be clicked; nothing is
 
 from __future__ import annotations
 
+import ctypes
+import ctypes.wintypes
 import difflib
+import os
 import time
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
@@ -23,7 +26,7 @@ import numpy as np
 from PIL import Image, ImageOps
 from pywinauto.base_wrapper import BaseWrapper
 
-from ..errors import ControlNotFound
+from ..errors import ControlNotFound, ScreenObstructed
 from ..vision.ocr import ocr_images
 from . import act, overlay
 
@@ -85,10 +88,11 @@ def _thin_rows(gray: np.ndarray, contrast: int = 10, share: float = 0.6) -> list
     if gray.shape[0] < 5:
         return []
     up, mid, down = gray[:-4], gray[2:-2], gray[4:]
-    darker = (mid < up - contrast) & (mid < down - contrast)
-    lighter = (mid > up + contrast) & (mid > down + contrast)
+    # differs from BOTH neighbours, in any direction: a grey line between a white row and the
+    # blue selected row is lighter than one side and darker than the other (seen live).
+    line = (np.abs(mid - up) > contrast) & (np.abs(mid - down) > contrast)
     mask = np.zeros(gray.shape[0], dtype=bool)
-    mask[2:-2] = (darker | lighter).mean(axis=1) >= share
+    mask[2:-2] = line.mean(axis=1) >= share
     return _runs(mask)
 
 
@@ -230,6 +234,26 @@ def grid_container(root: BaseWrapper) -> BaseWrapper:
     return max(panes, key=lambda p: p.rectangle().width() * p.rectangle().height())
 
 
+def _ensure_unobstructed(container: BaseWrapper, rect) -> None:
+    """The grid is read from screen pixels, so any other application's window on top of it (a
+    browser's 'is sharing your screen' bar, a chat popup) would be OCR'd as rows. Ask Windows
+    which window is topmost at points across the grid and stop with its title if it isn't ours."""
+    user32 = ctypes.windll.user32
+    own = {container.process_id(), os.getpid()}
+    if overlay._active is not None and getattr(overlay._active, "_proc", None):
+        own.add(overlay._active._proc.pid)
+    for fx in (0.1, 0.35, 0.65, 0.9):
+        for fy in (0.15, 0.5, 0.85):
+            point = ctypes.wintypes.POINT(int(rect.left + fx * rect.width()), int(rect.top + fy * rect.height()))
+            hwnd = user32.GetAncestor(user32.WindowFromPoint(point), 2)  # GA_ROOT: the top-level window
+            pid = ctypes.wintypes.DWORD()
+            user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+            if hwnd and pid.value not in own:
+                title = ctypes.create_unicode_buffer(256)
+                user32.GetWindowTextW(hwnd, title, 256)
+                raise ScreenObstructed(title.value or f"a window of process {pid.value}")
+
+
 def read_grid(container: BaseWrapper, headers: Sequence[str], autofit: bool = True,
               only: Sequence[str] | None = None) -> Grid:
     """Screenshot + read the grid; auto-fit truncated columns once and re-read."""
@@ -237,6 +261,7 @@ def read_grid(container: BaseWrapper, headers: Sequence[str], autofit: bool = Tr
     act.park_mouse(container)  # a hover tooltip over the grid would be OCR'd as a row
     rect = container.rectangle()
     with overlay.hidden():  # a recording caption on top of the grid would be OCR'd as rows
+        _ensure_unobstructed(container, rect)
         image = container.capture_as_image()
     grid = build_grid(image, headers, ocr_cells, origin=(rect.left, rect.top), only=only)
     truncated = {n for r in grid.rows for n, t in r.cells.items() if t.rstrip().endswith(_ELLIPSIS)}

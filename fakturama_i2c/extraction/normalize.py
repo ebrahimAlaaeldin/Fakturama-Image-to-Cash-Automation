@@ -20,7 +20,10 @@ from ..models import (
 )
 
 _WS = re.compile(r"\s+")
-_NUM = re.compile(r"-?[\d.,\s]*\d")
+# A number may use comma/dot/space thousands grouping and either decimal separator.
+# Keep the token bounded: the former permissive ``[\d.,\s]*`` swallowed OCR debris
+# after a formatted value (for example ``250,00 6`` when € was misread as 6).
+_NUM = re.compile(r"-?(?:\d{1,3}(?:[., ]\d{3})+|\d+)(?:[.,]\d{1,2})?")
 
 
 def clean(text: str) -> str:
@@ -73,6 +76,17 @@ def split_name(full: str) -> tuple[str, str]:
     if len(parts) < 2:
         return "", parts[0] if parts else ""
     return " ".join(parts[:-1]), parts[-1]
+
+
+# The payment methods the PDF names (2.10.4). OCR may drop a space ("BankTransfer"); a method that
+# equals one of these ignoring spaces and case is written exactly as here, so Fakturama finds it
+# instead of creating a near-duplicate. Anything else is kept as extracted.
+KNOWN_PAYMENT_METHODS = ("Bank Transfer", "Credit Card", "SEPA Direct Debit")
+
+
+def canonical_payment_method(text: str) -> str:
+    squashed = re.sub(r"\s+", "", text).casefold()
+    return next((m for m in KNOWN_PAYMENT_METHODS if m.replace(" ", "").casefold() == squashed), clean(text))
 
 
 def parse_status(text: str) -> PaidStatus:
@@ -150,7 +164,7 @@ def to_order(raw: RawOrder) -> OrderExtraction:
         ),
         billing_address=_address(raw.billing_address),
         delivery_address=_address(raw.delivery_address),
-        payment=Payment(method=clean(raw.payment_method), status=status, date=pay_date),
+        payment=Payment(method=canonical_payment_method(raw.payment_method), status=status, date=pay_date),
         items=sorted(items, key=lambda x: x.position),
         totals=Totals(net=totals["net_total"], vat=totals["vat_total"], gross=totals["gross_total"]),
     )

@@ -223,7 +223,46 @@ class Fakturama:
                     return tab
             return None
 
-        return wait_until(probe, f"view {tab_title!r}")
+        tab = wait_until(probe, f"view {tab_title!r}")
+        # Fakturama remembers views as floating, narrow MDI windows. Their NatTable is
+        # clipped and sometimes has no discoverable canvas until the view is restored.
+        # Dock it back into the lower view stack before searching or reading its grid.
+        tr, mr = tab.rectangle(), self.main.rectangle()
+        if tr.width() < mr.width() * 0.75:
+            restore = [
+                b for b in find_all(self.main, Query(control_type="Button"))
+                if name_of(b) == "Restore"
+                and abs(b.rectangle().top - tr.top) < 18
+                and b.rectangle().left >= tr.right - 35
+            ]
+            if restore:
+                act.click(restore[0])
+                wait_until(lambda: tab.rectangle().width() >= mr.width() * 0.75 or None,
+                           f"view {tab_title!r} restored", timeout=5)
+        return tab
+
+    def set_editor_maximized(self, root: BaseWrapper, maximized: bool) -> None:
+        """Toggle the active editor's MDI pane so all grid rows fit during verification."""
+        self.activate(root)
+        tab = self.tab_item_for(root)
+        tr = tab.rectangle()
+        target_name = "Maximize" if maximized else "Restore"
+        buttons = [
+            b for b in find_all(self.main, Query(control_type="Button"))
+            if name_of(b) == target_name
+            and b.rectangle().left > tr.left
+            and abs((b.rectangle().top + b.rectangle().bottom) // 2 - (tr.top + tr.bottom) // 2) < 18
+        ]
+        if buttons:
+            act.click(max(buttons, key=lambda b: b.rectangle().left))
+            wait_until(
+                lambda: any(name_of(b) == ("Restore" if maximized else "Maximize")
+                            and b.rectangle().left > tr.left
+                            and abs((b.rectangle().top + b.rectangle().bottom) // 2
+                                    - (tr.top + tr.bottom) // 2) < 18
+                            for b in find_all(self.main, Query(control_type="Button"))) or None,
+                f"editor maximized={maximized}", timeout=5,
+            )
 
     # ------------------------------------------------------------------ dialogs
 

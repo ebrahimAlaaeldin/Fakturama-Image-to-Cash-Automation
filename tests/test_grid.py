@@ -65,7 +65,14 @@ REAL = {
     "products_list.png": [124, 249, 473, 598, 723, 848],
     "order_items.png": [49, 89, 187, 246, 406, 496, 621, 686, 759, 824],
     "documents_selected_row.png": [124, 249, 374, 694, 853, 978, 1103, 1228],
+    # a just-added line selected: grey header (same grey as the lines) + blue row (seen live)
+    "order_items_new_line_selected.png": [49, 174, 299, 424, 549, 674, 799, 924, 1049, 1174],
 }
+
+
+def test_new_line_selected_keeps_every_row_line():
+    gray = np.asarray(Image.open(FIXTURES / "grids" / "order_items_new_line_selected.png").convert("L")).astype(int)
+    assert detect_lines(gray)[1] == [24, 49, 74, 99]  # header bottom + 3 row lines
 
 
 @pytest.mark.parametrize("name,expected", REAL.items())

@@ -83,3 +83,11 @@ def test_missing_fields_listed(raw_order):
     raw_order.billing_address.zip = ""
     raw_order.customer_alias = ""
     assert missing_fields(raw_order) == ["customer_alias", "billing_address.zip"]
+
+
+def test_payment_method_snaps_to_known_names():
+    from fakturama_i2c.extraction.normalize import canonical_payment_method as canon
+    assert canon("BankTransfer") == "Bank Transfer"
+    assert canon("credit card") == "Credit Card"
+    assert canon("SEPA DirectDebit") == "SEPA Direct Debit"
+    assert canon("PayPal") == "PayPal"  # unknown methods are kept as printed
